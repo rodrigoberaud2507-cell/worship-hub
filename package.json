@@ -1,7 +1,6 @@
 {
   "name": "worship-hub",
-  "version": "1.0.0",
-  "description": "Plataforma profesional de alabanza para iglesias",
+  "version": "2.0.0",
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod"
@@ -10,7 +9,5 @@
     "airtable": "^0.12.2",
     "bottleneck": "^2.19.5",
     "@google/generative-ai": "^0.10.0"
-  },
-  "keywords": ["worship", "iglesia", "alabanza", "música"],
-  "license": "MIT"
+  }
 }
