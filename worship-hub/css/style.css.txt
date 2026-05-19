@@ -1,0 +1,7 @@
+/* Estilos adicionales para modo oscuro y scroll */
+body { font-family: 'Inter', system-ui, sans-serif; }
+.chord { color: #fbbf24; font-weight: bold; white-space: pre; }
+.song-list-item { transition: background 0.2s; }
+.song-list-item:hover { background: rgba(255,255,255,0.05); }
+textarea.chordpro { font-family: 'Fira Code', monospace; }
+.offline { background: #ef4444 !important; }

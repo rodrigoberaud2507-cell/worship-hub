@@ -1,0 +1,40 @@
+const Airtable = require('airtable');
+const Bottleneck = require('bottleneck');
+
+const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY })
+  .base(process.env.AIRTABLE_BASE_ID);
+
+const limiter = new Bottleneck({ minTime: 200, maxConcurrent: 1 });
+
+module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  try {
+    const { action, table, id, data, params } = req.body;
+    const tableRef = base(table); // Ej: 'Songs'
+
+    let result;
+    switch (action) {
+      case 'list':
+        result = await limiter.schedule(() => tableRef.select(params).all());
+        break;
+      case 'create':
+        result = await limiter.schedule(() => tableRef.create(data));
+        break;
+      case 'update':
+        result = await limiter.schedule(() => tableRef.update(id, data));
+        break;
+      case 'delete':
+        result = await limiter.schedule(() => tableRef.destroy(id));
+        break;
+      default:
+        return res.status(400).json({ error: 'Acción no válida' });
+    }
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
