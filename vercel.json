@@ -4,7 +4,7 @@
       "memory": 512,
       "maxDuration": 10
     },
-    "api/ocr.js": {
+    "api/ocr/index.js": {
       "memory": 1024,
       "maxDuration": 30
     }
