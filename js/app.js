@@ -148,4 +148,94 @@ function handleInput(e) {
 
 async function handleSaveSong() {
   const title = document.getElementById('song-title')?.value?.trim();
-  const
+  const artist = document.getElementById('song-artist')?.value?.trim();
+  const key = document.getElementById('song-key')?.value?.trim();
+  const bpm = parseInt(document.getElementById('song-bpm')?.value) || null;
+  const timeSignature = document.getElementById('song-time')?.value;
+  const chordpro = document.getElementById('song-chordpro')?.value?.trim();
+  const sections = document.getElementById('song-sections')?.value?.trim();
+  const link = document.getElementById('song-link')?.value?.trim();
+
+  if (!title) {
+    alert('El título es obligatorio');
+    return;
+  }
+
+  const songData = { title, artist, key, bpm, timeSignature, chordpro, sections, link };
+
+  try {
+    if (currentSong?.id) {
+      await updateSong(currentSong.id, songData);
+      showNotification('✅ Canción actualizada');
+    } else {
+      await createSong(songData);
+      showNotification('🎵 Canción creada');
+    }
+    
+    currentView = 'songs';
+    currentSong = null;
+    await loadCurrentView();
+  } catch (error) {
+    console.error('Error guardando:', error);
+    alert('Error al guardar: ' + error.message);
+  }
+}
+
+async function createNewSetlist() {
+  const name = prompt('📋 Nombre del setlist:');
+  if (!name) return;
+  
+  try {
+    await createSetlist({ name, date: new Date().toISOString() });
+    showNotification('Setlist creado');
+    await loadCurrentView();
+  } catch (error) {
+    alert('Error: ' + error.message);
+  }
+}
+
+async function handleOCR() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    showNotification('🔍 Analizando imagen...', 'success');
+    try {
+      const { processImageForOCR } = await import('./ocr.js');
+      const result = await processImageForOCR(file);
+      
+      if (result.chordpro) {
+        currentSong = null;
+        currentView = 'song-form';
+        loadCurrentView();
+        
+        setTimeout(() => {
+          document.getElementById('song-chordpro').value = result.chordpro;
+          if (result.key) document.getElementById('song-key').value = result.key;
+          if (result.bpm) document.getElementById('song-bpm').value = result.bpm;
+          showNotification('✅ Letra detectada correctamente');
+        }, 500);
+      }
+    } catch (error) {
+      showNotification('❌ Error en OCR: ' + error.message, 'error');
+    }
+  };
+  input.click();
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('✅ Service Worker registrado'))
+        .catch(err => console.warn('Service Worker falló:', err));
+    });
+  }
+}
+
+// ==================== EXPORTACIONES ====================
+
+export { currentView, currentSongs, loadCurrentView };
