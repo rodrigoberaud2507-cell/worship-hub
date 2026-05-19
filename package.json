@@ -1,0 +1,14 @@
+{
+  "name": "worship-hub",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "airtable": "^0.12.2",
+    "dexie": "^3.2.4",
+    "bottleneck": "^2.19.5",
+    "@google/generative-ai": "^0.10.0"
+  }
+}
