@@ -1,0 +1,18 @@
+body { 
+  font-family: 'Inter', system-ui, sans-serif; 
+}
+.chord { 
+  color: #fbbf24; 
+  font-weight: bold; 
+  white-space: pre; 
+}
+.song-list-item { 
+  transition: background 0.2s; 
+  cursor: pointer;
+}
+.song-list-item:hover { 
+  background: rgba(255,255,255,0.05); 
+}
+.offline { 
+  background: #ef4444 !important; 
+}
