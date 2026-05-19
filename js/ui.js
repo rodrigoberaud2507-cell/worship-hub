@@ -1,0 +1,17 @@
+export function renderSongList(songs) {
+  const container = document.getElementById('main-content');
+  container.innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Canciones</h2>
+      <button id="add-song-btn" class="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded">+ Nueva canción</button>
+    </div>
+    <div class="grid gap-2">
+      ${songs.map(s => `
+        <div class="song-list-item p-3 bg-gray-800 rounded flex justify-between items-center" data-id="${s.id}">
+          <span><span class="chord">${s.key || ''}</span> ${s.title} - ${s.artist || ''}</span>
+          <button class="delete-btn text-red-400 hover:text-red-300 ml-4" data-id="${s.id}">🗑️</button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
