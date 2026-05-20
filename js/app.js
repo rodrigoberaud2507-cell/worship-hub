@@ -8,11 +8,37 @@ let currentSongs = [];
 let currentSong = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await processPendingChanges();
-  setInterval(processPendingChanges, 30000);
+  console.log('WorshipHub iniciando...');
+  
+  // Iniciar sincronización de cambios pendientes
+  try {
+    await processPendingChanges();
+  } catch (e) {
+    console.warn('Error en sincronización inicial:', e);
+  }
+  
+  // Sincronizar cada 30 segundos
+  setInterval(() => {
+    processPendingChanges().catch(() => {});
+  }, 30000);
+  
+  // Configurar navegación
   setupNavigation();
+  
+  // Cargar vista inicial
   await loadView();
+  
+  // Configurar chatbot
   setupChatbot();
+  
+  // Evento para reintentar carga desde el botón de emergencia
+  document.getElementById('main-content').addEventListener('click', (e) => {
+    if (e.target.id === 'retry-load' || e.target.closest('#retry-load')) {
+      loadView();
+    }
+  });
+  
+  console.log('WorshipHub listo');
 });
 
 async function loadView() {
@@ -22,7 +48,9 @@ async function loadView() {
   try {
     switch (currentView) {
       case 'songs':
+        console.log('Cargando canciones...');
         currentSongs = await fetchSongs();
+        console.log('Canciones cargadas:', currentSongs.length);
         renderSongList(currentSongs);
         break;
       case 'song-form':
@@ -40,10 +68,24 @@ async function loadView() {
         renderSongList(currentSongs);
     }
   } catch (e) {
-    dynamic.innerHTML = `<div class="text-center py-20"><i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i><p class="text-red-600 text-lg">Error al cargar los datos</p><p class="text-gray-500">${e.message}</p></div>`;
+    console.error('Error en loadView:', e);
+    dynamic.innerHTML = `
+      <div class="text-center py-20">
+        <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+        <p class="text-red-600 text-lg">Error al cargar los datos</p>
+        <p class="text-gray-500 text-sm mt-1">${e.message || 'Error desconocido'}</p>
+        <button id="retry-load" class="btn btn-primary mt-4"><i class="fas fa-sync-alt mr-2"></i>Reintentar</button>
+      </div>`;
   } finally {
-    if (loading) loading.classList.add('hidden');
-    dynamic.classList.remove('hidden');
+    // SIEMPRE ocultar el loading, pase lo que pase
+    if (loading) {
+      loading.classList.add('hidden');
+      console.log('Loading ocultado');
+    }
+    if (dynamic) {
+      dynamic.classList.remove('hidden');
+      console.log('Contenido dinámico visible');
+    }
   }
 }
 
@@ -93,17 +135,17 @@ function setupNavigation() {
 }
 
 async function saveSong() {
-  const title = document.getElementById('song-title').value.trim();
+  const title = document.getElementById('song-title')?.value?.trim();
   if (!title) return alert('Título obligatorio');
   const fields = {
     title,
-    artist: document.getElementById('song-artist').value,
-    key: document.getElementById('song-key').value,
-    bpm: document.getElementById('song-bpm').value || null,
-    timeSignature: document.getElementById('song-time').value,
-    chordpro: document.getElementById('song-chordpro').value,
-    sections: document.getElementById('song-sections').value,
-    link: document.getElementById('song-link').value
+    artist: document.getElementById('song-artist')?.value || '',
+    key: document.getElementById('song-key')?.value || '',
+    bpm: document.getElementById('song-bpm')?.value || null,
+    timeSignature: document.getElementById('song-time')?.value || '4/4',
+    chordpro: document.getElementById('song-chordpro')?.value || '',
+    sections: document.getElementById('song-sections')?.value || '',
+    link: document.getElementById('song-link')?.value || ''
   };
   if (currentSong?.id && !currentSong.id.startsWith('temp')) await updateSong(currentSong.id, fields);
   else await createSong(fields);
@@ -122,16 +164,17 @@ async function triggerOCR() {
       currentView = 'song-form';
       await loadView();
       setTimeout(() => {
-        document.getElementById('song-chordpro').value = result.chordpro || '';
-        if (result.key) document.getElementById('song-key').value = result.key;
-        if (result.bpm) document.getElementById('song-bpm').value = result.bpm;
+        if (document.getElementById('song-chordpro')) {
+          document.getElementById('song-chordpro').value = result.chordpro || '';
+          if (result.key) document.getElementById('song-key').value = result.key;
+          if (result.bpm) document.getElementById('song-bpm').value = result.bpm;
+        }
       }, 300);
     } catch (err) { alert('Error OCR: ' + err.message); }
   };
   input.click();
 }
 
-// ==================== CHATBOT ====================
 function setupChatbot() {
   const toggle = document.getElementById('chat-toggle');
   const container = document.getElementById('chatbot-container');
@@ -139,6 +182,8 @@ function setupChatbot() {
   const send = document.getElementById('chat-send');
   const input = document.getElementById('chat-input');
   const messages = document.getElementById('chat-messages');
+
+  if (!toggle || !container) return;
 
   toggle.addEventListener('click', () => container.classList.toggle('hidden'));
   close.addEventListener('click', () => container.classList.add('hidden'));
@@ -152,7 +197,7 @@ function setupChatbot() {
     addMessage('user', question);
     input.value = '';
     if (!currentSong) {
-      addMessage('assistant', 'Primero selecciona una canción para hacer preguntas sobre ella.');
+      addMessage('assistant', 'Selecciona una canción para hacer preguntas sobre ella.');
       return;
     }
     try {
