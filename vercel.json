@@ -1,12 +1,7 @@
 {
   "functions": {
-    "api/proxy/index.js": {
-      "memory": 512,
-      "maxDuration": 10
-    },
-    "api/ocr/index.js": {
-      "memory": 1024,
-      "maxDuration": 30
-    }
+    "api/proxy/index.js": { "memory": 512, "maxDuration": 10 },
+    "api/ocr/index.js": { "memory": 1024, "maxDuration": 30 },
+    "api/chat/index.js": { "memory": 512, "maxDuration": 15 }
   }
 }
