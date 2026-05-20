@@ -76,6 +76,3 @@ export async function createSetlist(fields) {
   } else { await addPendingChange({ tableName:'Setlists', recordId:tempId, operation:'create', payload:fields }); }
   return sl;
 }
-
-  return setlistData;
-}
