@@ -57,6 +57,7 @@
     </header>
 
     <main id="main-content" class="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
+      <!-- PANTALLA DE CARGA -->
       <div id="loading-screen" class="flex items-center justify-center py-20">
         <div class="text-center">
           <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
@@ -64,7 +65,11 @@
           <p class="text-gray-400 text-sm mt-1">Conectando con Airtable</p>
         </div>
       </div>
-      <div id="dynamic-content" class="hidden"></div>
+      
+      <!-- CONTENIDO DINÁMICO (inicialmente oculto) -->
+      <div id="dynamic-content" class="hidden">
+        <!-- Aquí se renderiza todo -->
+      </div>
     </main>
 
     <nav class="md:hidden bg-white border-t border-gray-200 px-2 py-2 flex justify-around items-center text-xs sticky bottom-0 z-50">
@@ -104,6 +109,22 @@
   <button id="chat-toggle" class="fixed bottom-6 right-6 bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-700 transition-all z-50">
     <i class="fas fa-comment-dots text-xl"></i>
   </button>
+
+  <!-- TEMPORIZADOR DE EMERGENCIA: Si en 3 segundos no se quitó el loading, lo fuerza -->
+  <script>
+    setTimeout(function() {
+      var loading = document.getElementById('loading-screen');
+      var dynamic = document.getElementById('dynamic-content');
+      if (loading && !loading.classList.contains('hidden')) {
+        console.warn('Forzando desaparición del loading por timeout de emergencia');
+        loading.classList.add('hidden');
+        if (dynamic) {
+          dynamic.classList.remove('hidden');
+          dynamic.innerHTML = '<div class="text-center py-20"><i class="fas fa-info-circle text-4xl text-blue-500 mb-4"></i><p class="text-gray-600 text-lg">La aplicación está lista</p><p class="text-gray-400 text-sm">Si no ves canciones, verifica tu conexión o crea una nueva.</p><button id="retry-load" class="btn btn-primary mt-4"><i class="fas fa-sync-alt mr-2"></i>Reintentar carga</button></div>';
+        }
+      }
+    }, 3000);
+  </script>
 
   <script type="module" src="/js/app.js"></script>
 </body>
