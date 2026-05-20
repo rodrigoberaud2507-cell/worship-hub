@@ -8,7 +8,6 @@ body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
-/* Acordes */
 .chord {
   color: #2563eb;
   font-weight: 700;
@@ -16,7 +15,6 @@ body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
   font-family: 'Fira Code', monospace;
 }
 
-/* Lista de canciones */
 .song-list-item {
   transition: all 0.2s;
   cursor: pointer;
@@ -31,7 +29,6 @@ body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
   box-shadow: 0 4px 12px rgba(59,130,246,0.15);
 }
 
-/* Botones */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -51,10 +48,8 @@ body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
 .btn-danger { background: white; color: #ef4444; border: 1px solid #fecaca; }
 .btn-danger:hover { background: #fef2f2; }
 
-/* Estados */
 .offline { background: #fee2e2 !important; color: #dc2626 !important; }
 
-/* Formularios */
 input, textarea, select {
   width: 100%;
   padding: 12px 16px;
@@ -90,7 +85,7 @@ input:focus, textarea:focus, select:focus {
   border: 1px solid #bfdbfe;
 }
 
-/* Vista ChordPro */
+/* ChordPro rendering */
 .chordpro-line {
   display: flex;
   flex-direction: column;
@@ -110,7 +105,7 @@ input:focus, textarea:focus, select:focus {
   line-height: 1.5;
 }
 
-/* Chatbot */
+/* Chat */
 #chat-messages .message {
   max-width: 85%;
   padding: 10px 14px;
@@ -129,3 +124,7 @@ input:focus, textarea:focus, select:focus {
   border: 1px solid #e5e7eb;
   color: #1f2937;
 }
+
+/* Animations */
+.fade-in { animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
