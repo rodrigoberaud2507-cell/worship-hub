@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadView() {
   const loading = document.getElementById('loading-screen');
   const dynamic = document.getElementById('dynamic-content');
+
   try {
     switch (currentView) {
       case 'songs':
@@ -38,10 +39,11 @@ async function loadView() {
         currentSongs = await fetchSongs();
         renderSongList(currentSongs);
     }
+  } catch (e) {
+    dynamic.innerHTML = `<div class="text-center py-20"><i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i><p class="text-red-600 text-lg">Error al cargar los datos</p><p class="text-gray-500">${e.message}</p></div>`;
+  } finally {
     if (loading) loading.classList.add('hidden');
     dynamic.classList.remove('hidden');
-  } catch (e) {
-    if (loading) loading.innerHTML = '<p class="text-red-600">Error al cargar datos</p>';
   }
 }
 
@@ -51,11 +53,11 @@ function setupNavigation() {
       const view = e.currentTarget.dataset.view;
       if (view === 'songs') { currentView = 'songs'; currentSong = null; }
       else if (view === 'setlists') { currentView = 'setlists'; currentSong = null; }
-      else if (view === 'events') { currentView = 'songs'; } // Placeholder
+      else if (view === 'events') { currentView = 'songs'; }
       document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(b => {
-        b.classList.remove('active','bg-blue-50','text-blue-700');
+        b.classList.remove('active', 'bg-blue-50', 'text-blue-700');
       });
-      e.currentTarget.classList.add('active','bg-blue-50','text-blue-700');
+      e.currentTarget.classList.add('active', 'bg-blue-50', 'text-blue-700');
       loadView();
     });
   });
