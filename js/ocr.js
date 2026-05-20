@@ -6,8 +6,8 @@ export async function processImageForOCR(file) {
   let { width, height } = img;
   if (width > maxDim || height > maxDim) {
     const ratio = Math.min(maxDim / width, maxDim / height);
-    width *= ratio;
-    height *= ratio;
+    width = Math.round(width * ratio);
+    height = Math.round(height * ratio);
   }
   canvas.width = width;
   canvas.height = height;
@@ -19,9 +19,6 @@ export async function processImageForOCR(file) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ imageBase64: base64 })
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || 'Error en OCR');
-  }
+  if (!res.ok) throw new Error((await res.json().catch(()=>({}))).error || 'Error OCR');
   return res.json();
 }
